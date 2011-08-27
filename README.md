@@ -262,7 +262,7 @@ In [this explanation](http://hacks.mozilla.org/2010/06/beyond-html5-database-api
   * despite the ubiquity that SQL enjoys, there isn’t a single normative SQL standard that defines the technology
   * We think SQLite is an extremely useful technology for applications, and **make it available for Firefox extensions and trusted code**
   * we don’t want changes to SQLite to affect the web later, and don’t think harnessing major browser releases (and a web standard) to SQLite is prudent
-  * IndexedDB does not have this problem (*as well as SQL92 standard*)
+  * IndexedDB does not have this problem (*n.d. as well as SQL92 standard*)
 
 As we can read, **SQLite is integrated in Firefox since ever** because **it is a wonderful db engine** and this is why Mozilla developers and XUL components can **widely use it everywhere** but "*those stupid web developers should not*" ... personal comment out of these facts.
 
