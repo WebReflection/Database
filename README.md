@@ -253,6 +253,8 @@ WHY
 Regardless the fact **Web SQL Database** has been **deprecated** by **W3C** thanks to **Mozilla influence**, and probably somebody else as well, **SQLite is present by default everywhere**, starting from your mobile phone, tablet, Operating System ... etc etc.
 SQLite **is a de-facto standard** only W3C could drop so easily.
 
+I mean ... my [devpro.it](http://devpro.it/) site is based on SQLite since **ever** without a single problem and you can bet I have never updated a single piece of code related to the SQLite engine.
+
 Mozilla talked about [advantages of IndexedDB over Web SQL Database](http://hacks.mozilla.org/2010/06/comparing-indexeddb-and-webdatabase/) and **there isn't a single example where IndexedDb is faster, smaller, easier, or better, than SQLite**.
 I call it **epic-fail** due somebody with *pretending technicals knowledge* able to make such *political decision* and the proof is under everybody eyes.
 In [this explanation](http://hacks.mozilla.org/2010/06/beyond-html5-database-apis-and-the-road-to-indexeddb/) you can find the Mozilla reason here summarized:
