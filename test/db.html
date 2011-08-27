@@ -1,0 +1,242 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Database</title>
+        <script>function wru(wru){ // enojy your tests!
+
+var
+    assert = wru.assert,
+    async = wru.async
+;
+
+wru.test([
+    {
+        name: "Database creation with defaults",
+        test: function () {
+            var db = new Database;
+            assert("name", db.name === document.domain || db.name === "db");
+            assert("size", db.size === 5 * 1024 * 1024);
+            assert("description", db.description === "data");
+            assert("version", db.version === "1.0");
+        }
+    }, {
+        name: "Database creation without defaults",
+        test: function () {
+            var
+                options = {
+                    name: "another" + Math.random(),
+                    size: 5 * 1024 * 1024,
+                    description: "whatever"
+                    // version should be probably alwas "1.0"
+                },
+                db = new Database(options),
+                key
+            ;
+            
+            for (key in options) {
+                assert(key, db[key] === options[key]);
+            }
+            
+        }
+    }, {
+        name: "Database#drop('table')",
+        test: function () {
+            (new Database)
+                .drop(
+                    'test_data_only',
+                    async("table 'test_data_only' dropped if present", function (e) {
+                        assert(e.type, e.type === "success");
+                    })
+                )
+                .drop(
+                    'test_id_auto_inc_and_data',
+                    async("table 'test_data_only' dropped if present", function (e) {
+                        assert(e.type, e.type === "success");
+                    })
+                )
+            ;
+        }
+    }, {
+        /*
+        self.close = close;
+        */
+        name: "Database#create('table', [fields])",
+        test: function () {
+            var
+                db = new Database,
+                read = async("reading insertions", function () {
+                    assert(1);
+                    db.read('SELECT COUNT(id) AS tot FROM test_id_auto_inc_and_data', async("records inserted", function (e) {
+                        assert("more than zero", e.length && 3 === e.item(0).tot);
+                    }));
+                }),
+                inserts = 3
+            ;
+            db
+                .create(
+                    'test_data_only',
+                    ['data TEXT'],
+                    async("table 'test_data_only' created", function (e) {
+                        assert(e.type, e.type === "success");
+                        db.insert(
+                            'test_data_only',
+                            ['test'],
+                            async("inserted", function (e) {
+                                assert("successful insert", e.type === "success");
+                                assert("one affected row", e.result.rowsAffected === 1);
+                                --inserts || read();
+                            })
+                        );
+                    })
+                )
+                .create(
+                    'test_id_auto_inc_and_data',
+                    [null, 'data TEXT'],
+                    async("table 'test_id_auto_inc_and_data' created", function (e) {
+                        assert(e.type, e.type === "success");
+                        db.insert(
+                            'test_id_auto_inc_and_data',
+                            [null, 'test'],
+                            async("inserted", function (e) {
+                                assert("successful insert", e.type === "success");
+                                assert("there is an insertId", typeof e.result.insertId == "number");
+                                --inserts || read();
+                            })
+                        );
+                        db.insert(
+                            'test_id_auto_inc_and_data',
+                            [[null, 'test'], [null, 'test']],
+                            async("inserted", function (e) {
+                                assert("successful insert", e.type === "success");
+                                --inserts || read();
+                            })
+                        );
+                    })
+                )
+            ;
+        }
+    }, {
+        name: "Database#create('truncate')",
+        test: function () {
+            (new Database)
+                .create('t1', [null, 'i'], async(function (e) {
+                    e.db.insert('t1', [null, 10], assert(
+                        async(function (e) {
+                            e.db.truncate('t1', assert(
+                                async(function (e) {
+                                    e.db.read('SELECT * FROM t1', assert(
+                                        async(function (e) {
+                                            assert(
+            /* you have to admit here */        e.type === "success" &&
+            /* "wru" is freaking cool! */       e.length === 0
+                                            );
+                                        })
+                                    ))
+                                })
+                            ))
+                        })
+                    ))
+                }))
+            ;
+        }
+    }, {
+        name: "Database#query(SQL)",
+        test: function () {
+            (new Database).query(
+                'SELECT * FROM sqlite_master', async(function (e) {
+                    for (var i = e.length; i--;) {
+                        assert(e.item(i));
+                    }
+                })
+            );
+        }
+    }, {
+        name: "Database#read(SQL)",
+        test: function () {
+            (new Database).read(
+                'SELECT * FROM sqlite_master', async(function (e) {
+                    for (var i = e.length; i--;) {
+                        assert(e.item(i));
+                    }
+                })
+            );
+        }
+    }, {
+        name: "callback(Event)",
+        test: function () {
+            var db = new Database;
+            db
+                .read(
+                    'SELECT * FROM sqlite_master', async("successful", function (e) {
+                        assert("database reference", e.db === db);
+                        assert("success as type", e.type === "success");
+                        assert("result property", typeof e.result == "object");
+                        assert("length property", e.length === e.result.rows.length);
+                        assert("item(index)",
+                            JSON.stringify(e.item(0)) ===
+                            JSON.stringify(e.result.rows.item(0))
+                        );
+                    })
+                )
+                .read(
+                    'SELECT * FROM wtf', async("error", function (e) {
+                        assert("database reference", e.db === db);
+                        assert("error as type", e.type === "error");
+                        assert("error property", typeof e.error == "object");
+                    })
+                )
+            ;
+        }
+    }
+]);
+
+
+        }</script>
+        
+        <script src="../build/db.min.js"></script>
+        
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+        <style type="text/css">
+#wru {
+    font-family: sans-serif;
+    font-size: 11pt;
+    border: 1px solid #333;
+}
+#wru div {
+    cursor: default;
+    padding: 0;
+    color: #000;
+}
+#wru div span,
+#wru div strong {
+    display: block;
+    padding: 4px;
+    margin: 0;
+}
+#wru div ul {
+    margin: 0;
+    padding-bottom: 4px;
+}
+#wru div.pass {
+    background: #90EE90;
+}
+#wru div.fail {
+    background: #FF6347;
+}
+#wru div.error {
+    background: #000;
+    color: #FFF;
+}
+        </style>
+    </head>
+    <body>
+        <div id="wru"></div>
+        <script>
+/*!
+(C) Andrea Giammarchi, @WebReflection - Mit Style License
+*/
+wru(function(V){function i(){y=I.call(l);if(y){(N=k(k(W.node,"div"),"span"))[C]=((ad(y,P)&&y[P])||(ad(y,e)&&y[e])||O)+h+h;a=[];s=[];Q=[];Y={};b("setup");Q[ae]||b("test");b("teardown");L||p()}else{r()}}function n(ag){try{return M.call(g,ag)}catch(af){return g.createElement(ag)}}function k(af,ag){return af.appendChild(n(ag))}function f(af){N[C]=v.call(N[C],0,-2)+h+af}function r(){var ag=W.node.insertBefore(n("div"),W.node.firstChild),ah,af;if(aa){af="error";ah="There Are Errors: "+aa}else{if(A){af="fail";ah=A+" Tests Failed"}else{af="pass";ah="Passed "+q+" Tests"}}ag[C]="<strong>"+ah+"</strong>";ag.className=af}function E(){var af=this.lastChild.style;af.display=af.display=="none"?"block":"none"}function c(af){N[C]+="<ul>"+B+t.call(af,d+B)+d+"</ul>";(N.onclick=E).call(N)}function p(){q+=a[ae];A+=s[ae];aa+=Q[ae];f("("+t.call([a[ae],K=s[ae],Q[ae]],", ")+")");N=N.parentNode;Q[ae]?c(Q,T="error"):(K?c(s,T="fail"):T="pass");N.className=T;K=0;T=h;i()}function b(af){if(ad(y,af)){try{y[af](Y)}catch(ag){X.call(Q,h+ag)}}}function ad(ag,af){return o.call(ag,af)}function u(){return D()<0.5?-1:1}var W={assert:function R(ag,af){if(arguments[ae]==1){af=ag;ag=O}x=G;X.call(af?a:s,T+ag);return af},async:function S(ag,aj,ah,ai){ai=++L;if(typeof ag=="function"){ah=aj;aj=ag;ag="asynchronous test #"+ai}ah=U(function(){ai=0;X.call(s,ag);--L||p()},J(ah||w)||w);return function af(){if(!ai){return}x=ab;T=ag+": ";try{aj.apply(this,arguments)}catch(ak){x=G;X.call(Q,T+ak)}T=h;if(x){F(ah);--L||p()}}},test:function m(af){l=H.apply(l,[af]);W.random&&ac.call(l,u);L||i()}},G=true,ab=!G,w=100,h=" ",O="unknown",ae="length",P="name",e="description",B="<li>",d="</li>",j="\\|/-",o=W.hasOwnProperty,T=h,Z=T.charAt,v=T.slice,l=[],H=l.concat,t=l.join,X=l.push,I=l.shift,ac=l.sort,L=0,K=0,q=0,A=0,aa=0,C="innerHTML",g=V.document,M=g.createElement,z,J,D,U,F,y,N,a,s,Q,Y,x;z=V.Math;J=z.abs;D=z.random;U=V.setTimeout;F=V.clearTimeout;W.node=(g.getElementById("wru")||g.body||g.documentElement);V.setInterval(function(){L&&f(Z.call(j,K++%4))},w);w*=w;W.random=ab;return W}(this));
+        </script>
+    </body>
+</html>
