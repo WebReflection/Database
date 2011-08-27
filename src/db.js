@@ -104,7 +104,7 @@ var Database = (function (window) {"use strict";
                     tmp;
                     i < length; ++i
                 ) {
-                    t.executeSql(sql[i], arrayfy(a[i]), success, error);
+                    t.executeSql(sql[i] || sql[0], arrayfy(a[i]), success, error);
                 }
             });
             return self;

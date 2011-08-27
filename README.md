@@ -137,7 +137,7 @@ Drop/remove a table only if exists.
 db.truncate(tableName[, callback])
 ----------------------------------
 
-Truncate is not natively supported by SQLite syntax but this method is clever enough: it saves the *creation table* statement first, and if `db.drop(tableName)` operation was successful, it creates the table again as it was before.
+Truncate is not natively supported by SQLite syntax but this method is clever enough and super fast: it saves the *creation table* statement first, and if `db.drop(tableName)` operation was successful, it creates the table again as it was before.
 
     db.truncate("contacts", function (e) {
         if (e.type === "success") {
@@ -145,3 +145,65 @@ Truncate is not natively supported by SQLite syntax but this method is clever en
         }
     });
 
+
+db.query(SQL, arguments[, callback])
+------------------------------------
+
+Every `db.query()` call creates a new *transaction* and this method is able to accept one or more SQL statements per transactions.
+
+    // single UPDATE example
+    db.query(
+        'UPDATE TABLE contacts SET cell = ? WHERE name = ?',
+        [
+            "76543",    // the new cell to update
+            "Mate"      // the contact name which cell has to be updated
+        ]
+    );
+    
+    // multiple UPDATE example. One query, many updates
+    db.query(
+        'UPDATE TABLE contacts SET cell = ? WHERE name = ?', [
+        [
+            "76543",    // the new cell to update
+            "Mate"      // the contact name which cell has to be updated
+        ], [
+            "35468",    // the new cell to update
+            "Dude"      // the contact name which cell has to be updated
+        ]
+    ]);
+    
+    // multiple query example. N queries, N updates
+    db.query([
+        'UPDATE TABLE contacts SET cell = ? WHERE name = ?',
+        'UPDATE TABLE contacts SET name = ? WHERE cell = ?'
+    ], [
+        [
+            "76543",    // the new cell to update
+            "Mate"      // the contact name which cell has to be updated
+        ], [
+            "35468",    // the new cell to update
+            "Dooooode"  // the contact name which cell has to be updated
+        ]
+    ]);
+
+Everything is still valid if the *arguments* is an object, rather than an array.
+
+    db.query(
+        'UPDATE TABLE contacts SET cell = :cell WHERE name = :name',
+        [
+            cell: "76543",
+            name: "Mate"
+        ]
+    );
+
+With `db.query()` *arguments* could be an object, an array, or a collection of both.
+
+
+db.read(SQL, arguments[, callback])
+-----------------------------------
+
+The `db.read()` method is similar to the `db.query()` one except it uses **readTransaction** rather than **transaction**.
+
+The difference between these two native methods is that *transaction* operates in **read/write** mode while *readTransaction* operates in **read only** mode.
+
+I could not measure performances but if a query is about reading, rather than inserting, deleting, or updating, `db.read()` is the method you are looking for, assuming things are optimized and faster on SQLite level.

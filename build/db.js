@@ -75,14 +75,6 @@
         return self;
     }
     
-    DatabasePrototype.close = close;
-    DatabasePrototype.create = create;
-    DatabasePrototype.drop = drop;
-    DatabasePrototype.insert = insert;
-    DatabasePrototype.read = read;
-    DatabasePrototype.query = query;
-    DatabasePrototype.truncate = truncate;
-    
     function arrayfy(whatever) {
         return concat.call([], whatever === undefined ? [] : whatever);
     }
@@ -116,7 +108,7 @@
                     tmp;
                     i < length; ++i
                 ) {
-                    t.executeSql(sql[i], arrayfy(a[i]), success, error);
+                    t.executeSql(sql[i] || sql[0], arrayfy(a[i]), success, error);
                 }
             });
             return self;
@@ -196,6 +188,14 @@
             fn(e);
         });
     }
+    
+    DatabasePrototype.close = close;
+    DatabasePrototype.create = create;
+    DatabasePrototype.drop = drop;
+    DatabasePrototype.insert = insert;
+    DatabasePrototype.read = read;
+    DatabasePrototype.query = query;
+    DatabasePrototype.truncate = truncate;
     
     return Database;
     
