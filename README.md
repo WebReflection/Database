@@ -234,3 +234,11 @@ This object has these peculiarities:
     }
 
 In this way it is **always possible to recycle callbacks** rather than create a new function per each operation.
+
+It is also convenient to have length and item method in the object itself ... things are less "*boring*" here.
+
+    db.read('SELECT * FROM contacts', function (e) {
+        for (var i = 0; i < e.length; i++) {
+            console.log(e.item(i));
+        }
+    });
