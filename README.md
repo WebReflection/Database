@@ -111,6 +111,7 @@ If you have a list of *key/value* pairs, consider [JSONH](https://github.com/Web
         myDBData = JSONH.pack(myData),
         headers = myDBData[0]
     ;
+    // remove JSONH headers info (number of headers plus first index)
     myDBData = myDBData.slice(headers + 1);
     
     // create an array of values per table row
@@ -121,4 +122,26 @@ If you have a list of *key/value* pairs, consider [JSONH](https://github.com/Web
     // insert into db all of them
     db.insert("contacts", dbData);
 
+
+db.drop(tableName[, callback])
+------------------------------
+Drop/remove a table only if exists.
+
+    db.drop("contacts", function (e) {
+        if (e.type === "success") {
+            alert("... feeling lonely ...");
+        }
+    });
+
+
+db.truncate(tableName[, callback])
+----------------------------------
+
+Truncate is not natively supported by SQLite syntax but this method is clever enough: it saves the *creation table* statement first, and if `db.drop(tableName)` operation was successful, it creates the table again as it was before.
+
+    db.truncate("contacts", function (e) {
+        if (e.type === "success") {
+            alert("Ready for a new life!");
+        }
+    });
 
