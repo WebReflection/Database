@@ -71,14 +71,6 @@ var Database = (function (window) {"use strict";
         return self;
     }
     
-    DatabasePrototype.close = close;
-    DatabasePrototype.create = create;
-    DatabasePrototype.drop = drop;
-    DatabasePrototype.insert = insert;
-    DatabasePrototype.read = read;
-    DatabasePrototype.query = query;
-    DatabasePrototype.truncate = truncate;
-    
     function arrayfy(whatever) {
         return concat.call([], whatever === undefined ? [] : whatever);
     }
@@ -192,6 +184,14 @@ var Database = (function (window) {"use strict";
             fn(e);
         });
     }
+    
+    DatabasePrototype.close = close;
+    DatabasePrototype.create = create;
+    DatabasePrototype.drop = drop;
+    DatabasePrototype.insert = insert;
+    DatabasePrototype.read = read;
+    DatabasePrototype.query = query;
+    DatabasePrototype.truncate = truncate;
     
     return Database;
     
