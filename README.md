@@ -271,6 +271,8 @@ As summary, **Web SQL Database is everywhere** except it's not exposed in Firefo
 
 **SQL is optimized on core level** which is **something Web Developers are missing** when it comes to performances.
 
+Moreover, **JavaScript itself changed** over these years **as well as HTML**, the argument *we cannot be stuck behind SQLite* is pointless out of a company that is updating the major version every few weeks.
+
 Accordingly, I don't care about these decisions, **all I care is about Web Development** and since nobody else complained that much about SQLite out there, I do believe even if W3C decided it's deprecated **it will last for very long time** in all Chrome, Opera, and Webkit/Safari browsers ... aka: mobile!
 
 This project is to simply few common tasks over the *not so bad* interface W3C defined already few years ago.
