@@ -242,3 +242,6 @@ It is also convenient to have length and item method in the object itself ... th
             console.log(e.item(i));
         }
     });
+
+Bear in mind every time you access an item of a result set, a fresh new object may be created.
+Store the reference once rather than `e.item(i)` or `e.result.rows.item(i)` each time to gain performances.
