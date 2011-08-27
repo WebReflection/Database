@@ -207,3 +207,30 @@ The `db.read()` method is similar to the `db.query()` one except it uses **readT
 The difference between these two native methods is that *transaction* operates in **read/write** mode while *readTransaction* operates in **read only** mode.
 
 I could not measure performances but if a query is about reading, rather than inserting, deleting, or updating, `db.read()` is the method you are looking for, assuming things are optimized and faster on SQLite level.
+
+
+Callback Event object
+=====================
+
+Every callback will always receive the same kind of *Event objetct*.
+This object has these peculiarities:
+
+    // if everything was fine ...
+    {
+        type: "success",
+        result: SQLStatementCallback,
+        item: function (i) { // shortcut
+            return this.result.rows.item(i);
+        },
+        length: result.rows.length // as shortcut,
+        db: reference // the database object that performed the query
+    }
+    
+    // if something went terribly wrong ...
+    {
+        type: "error",
+        error: SQLStatementErrorCallback,
+        db: reference // the database object that performed the query
+    }
+
+In this way it is **always possible to recycle callbacks** rather than create a new function per each operation.
