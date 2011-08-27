@@ -245,3 +245,28 @@ It is also convenient to have length and item method in the object itself ... th
 
 Bear in mind every time you access an item of a result set, a fresh new object may be created.
 Store the reference once rather than `e.item(i)` or `e.result.rows.item(i)` each time to gain performances.
+
+
+WHY
+===
+
+Regardless the fact **Web SQL Database** has been **deprecated** by **W3C** thanks to **Mozilla influence**, and probably somebody else as well, **SQLite is present by default everywhere**, starting from your mobile phone, tablet, Operating System ... etc etc.
+SQLite **is a de-facto standard** only W3C could drop so easily.
+
+Mozilla talked about [advantages of IndexedDB over Web SQL Database](http://hacks.mozilla.org/2010/06/comparing-indexeddb-and-webdatabase/) and **there isn't a single example where IndexedDb is faster, smaller, easier, or better, than SQLite**.
+I call it **epic-fail** due somebody with *pretending technicals knowledge* able to make such *political decision* and the proof is under everybody eyes.
+In [this explanation](http://hacks.mozilla.org/2010/06/beyond-html5-database-apis-and-the-road-to-indexeddb/) you can find the Mozilla reason here summarized:
+
+  * despite the ubiquity that SQL enjoys, there isn’t a single normative SQL standard that defines the technology
+  * We think SQLite is an extremely useful technology for applications, and **make it available for Firefox extensions and trusted code**
+  * we don’t want changes to SQLite to affect the web later, and don’t think harnessing major browser releases (and a web standard) to SQLite is prudent
+  * IndexedDB does not have this problem (*as well as SQL92 standard*)
+
+As we can read, **SQLite is integrated in Firefox since ever** because **it is a wonderful db engine** and this is why Mozilla developers and XUL components can **widely use it everywhere** but "*those stupid web developers should not*" ... personal comment out of these facts.
+
+As summary, **Web SQL Database is everywhere** except it's not exposed in Firefox and probably IE (... SURPRISEEEEE!!! ).
+**SQL syntax and purpose is not easy to replace** with whatever **IndexedDb based indeed on SQLite** behind the scene.
+
+I don't care about these decisions, **all I care is about Web Development** and since nobody else complained that much about SQLite out there, I do believe even if W3C decided it's deprecated **it will last for very long time** in all Chrome, Opera, and Webkit/Safari browsers ... aka: mobile!
+
+This project is to simply few common tasks over the *not so bad* interface W3C defined already few years ago.
