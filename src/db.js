@@ -59,17 +59,13 @@ var Database = (function (window) {"use strict";
         DatabasePrototype = Database.prototype
     ;
     
-    function Database(options, fn) {
+    function Database(options) {
         
         var self = this instanceof Database ?
-            this :
-            new Database(options)
+            this : new Database(options)
         ;
         
-        if (isFunction(options)) {
-            fn = options;
-            options = {}
-        } else if (!options) {
+        if (!options) {
             options = {}
         }
         
