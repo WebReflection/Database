@@ -275,4 +275,4 @@ Moreover, **JavaScript itself changed** over these years **as well as HTML**, th
 
 Accordingly, I don't care about these decisions, **all I care is about Web Development** and since nobody else complained that much about SQLite out there, I do believe even if W3C decided it's deprecated **it will last for very long time** in all Chrome, Opera, and Webkit/Safari browsers ... aka: mobile!
 
-This project is to simply few common tasks over the *not so bad* interface W3C defined already few years ago.
+This project is to simplify few common tasks over the *not so bad* interface W3C defined already few years ago.
