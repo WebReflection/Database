@@ -181,8 +181,8 @@ Every `db.query()` call creates a new *transaction* and this method is able to a
             "76543",    // the new cell to update
             "Mate"      // the contact name which cell has to be updated
         ], [
-            "35468",    // the new cell to update
-            "Dooooode"  // the contact name which cell has to be updated
+            "Dooooode", // the new cell to update
+            "35468"     // the contact name which cell has to be updated
         ]
     ]);
 
