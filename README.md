@@ -190,10 +190,10 @@ Everything is still valid if the *arguments* is an object, rather than an array.
 
     db.query(
         'UPDATE TABLE contacts SET cell = :cell WHERE name = :name',
-        [
+        {
             cell: "76543",
             name: "Mate"
-        ]
+        }
     );
 
 With `db.query()` *arguments* could be an object, an array, or a collection of both.
