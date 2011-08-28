@@ -122,14 +122,14 @@
             self[expando][method](function (t) {
                 for (var
                     sql = arrayfy(SQL),
-                    a = arrayfy(A),
+                    a = toListOfParameters(A),
                     i = 0,
                     length = max(sql.length, a.length),
                     tr = (t[expando] = {self:self, fn:fn, i:length}),
                     tmp;
                     i < length; ++i
                 ) {
-                    t.executeSql(sql[i] || sql[0], arrayfy(a[i]), success, error);
+                    t.executeSql(sql[i] || sql[0], a[i], success, error);
                 }
             });
             return self;
@@ -157,7 +157,7 @@
         for (var
             self = this,
             sql = [],
-            a = !isArray(values) || typeof values[0] != "object" || !values[0] ? [values] : values,
+            a = toListOfParameters(values),
             i = 0, length = a.length,
             many = Array(a[0].length + 1).join(", ?").slice(2);
             i < length; ++i
@@ -186,6 +186,10 @@
                 db: t.self
             });
         }
+    }
+    
+    function toListOfParameters(values) {
+        return !isArray(values) || typeof values[0] != "object" || !values[0] ? [values] : values;
     }
     
     function truncate(name, fn) {
