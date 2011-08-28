@@ -61,9 +61,11 @@ var Database = (function (window) {"use strict";
     
     function Database(options) {
         
-        var self = this instanceof Database ?
-            this : new Database(options)
+        if (!(this instanceof Database))
+            return new Database(options)
         ;
+        
+        var self = this;
         
         options || (options = {});
         
