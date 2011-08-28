@@ -40,6 +40,7 @@ var Database = (function (window) {"use strict";
         read = createReadOrQuery("readT"),
         query = createReadOrQuery("t"),
         document = window.document,
+        max = window.Math.max,
         SQLTransaction = window.SQLTransaction,
         openDatabase = "openDatabase",
         expando = "_" + ("" + Math.random()).slice(2),
@@ -94,8 +95,10 @@ var Database = (function (window) {"use strict";
     }
     
     function close() {
+        // hoping that Browsers will call asyncClose on their side
+        // cannot actually remove references or transactions may fail
         // this[expando][expando] = null;
-        delete this[expando];
+        // delete this[expando];
     }
     
     function create(name, fields, fn) {
@@ -117,7 +120,7 @@ var Database = (function (window) {"use strict";
                     sql = arrayfy(SQL),
                     a = arrayfy(A),
                     i = 0,
-                    length = sql.length,
+                    length = max(sql.length, a.length),
                     tr = (t[expando] = {self:self, fn:fn, i:length}),
                     tmp;
                     i < length; ++i
