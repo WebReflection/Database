@@ -69,9 +69,7 @@
             this : new Database(options)
         ;
         
-        if (!options) {
-            options = {}
-        }
+        options || (options = {});
         
         // internal db invisible outside the closure
         defineProperty(self, expando, {
