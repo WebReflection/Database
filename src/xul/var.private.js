@@ -1,0 +1,3 @@
+    
+        isArray = Array.isArray
+    
