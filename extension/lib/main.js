@@ -1,6 +1,9 @@
-const {Cc, Ci} = require("chrome");
-
-var Database = function () {
+/*!
+(C) Andrea Giammarchi, @WebReflection - Mit Style License
+*/
+/**@license (C) Andrea Giammarchi, @WebReflection - Mit Style License
+*/
+var Database = (function (window) {exports.Database = Database;
     
     /**
      * Copyright (C) 2011 by Andrea Giammarchi, @WebReflection
@@ -23,107 +26,8 @@ var Database = function () {
      * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
      * THE SOFTWARE.
      */
+     
     
-    var
-        undefined,
-        SIZE = 5 * 1024 * 1024,
-        TABLE = " TABLE ",
-        DROP = "DROP",
-        EXISTS = " EXISTS ",
-        IF = "IF",
-        autoIncrement = "id INTEGER PRIMARY KEY AUTOINCREMENT",
-        max = Math.max,
-        concat = [].concat,
-        isArray = Array.isArray
-    ;
-    
-    function arrayfy(whatever) {
-        return concat.call([], whatever === undefined ? [] : whatever);
-    }
-    
-    function openDatabase(name) {
-        var
-            file = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("UChrm", Ci.nsIFile),
-            store = Cc["@mozilla.org/storage/service;1"].getService(Ci.mozIStorageService)
-        ;
-        file.append("localhost"); // find a way to retrieve the current domain here
-        if (!file.exists() || !file.isDirectory()) {
-            file.create(Ci.nsIFile.DIRECTORY_TYPE, 0777);
-        }
-        file.append(("" + name).replace(/\W/g, "_") + ".sqlite");
-        if (!file.exists()) {
-            file.create(Ci.nsIFile.FILE_TYPE, 0777);
-        }
-        return store.openDatabase(file);
-    }
-    
-    function toListOfParameters(values) {
-        return !isArray(values) || typeof values[0] != "object" || !values[0] ? [values] : values;
-    }
-    
-    function item(i) {
-        return this[i];
-    }
-    
-    function eventItem(i) {
-        return this.result.rows.item(i);
-    }
-    
-    function success(result) {
-        if (--this.i) return;
-        var
-            statement = this.statement,
-            columns = [],
-            rows = [],
-            i, length, row, tmp
-        ;
-        for (i = 0, length = statement.columnCount; i < length; ++i) {
-            columns[i] = statement.getColumnName(i);
-        }
-        while (row = result.getNextRow()) {
-            rows.push(tmp = {});
-            for (i = 0, length = row.numEntries; i < length; ++i) {
-                tmp[columns[i]] = row.getResultByIndex(i);
-            }
-        }
-        rows.item = item;
-        this.successful = true;
-        (this.fn || empty)({
-            type: "success",
-            result: {
-                insertId: this.db.lastInsertRowID,
-                rowsAffected: 0,
-                rows: rows
-            },
-            item: eventItem,
-            length: rows.length,
-            db: this.self
-        });
-    }
-    
-    function error(e) {
-        --this.i || (this.fn || empty)({
-            type: "error",
-            error: e,
-            db: this.self
-        });
-    }
-    
-    function complete(reason) {
-        this.successful || --this.i || (this.fn || empty)({
-            type: "success",
-            result: {
-                insertId: this.db.lastInsertRowID,
-                rowsAffected: 0, // TODO: is there a way to know this?
-                rows: []
-            },
-            item: eventItem,
-            length: 0,
-            db: this.self
-        });
-    }
-    
-    function empty() {}
     
     function Database(options) {
         
@@ -203,11 +107,18 @@ var Database = function () {
                     statement.executeAsync(tr);
                 } catch(e) {
                     tr.handleError(e);
+                    tr = null;
                     break;
                 }
                 
             }
-            db.commitTransaction();
+            tr && db.commitTransaction();
+            /*
+            tr ?
+                db.commitTransaction() :
+                db.rollbackTransaction()
+            ;
+            */
         };
         
         self.truncate = function truncate(name, fn) {
@@ -231,59 +142,117 @@ var Database = function () {
         
     }
     
+    
+    function complete(reason) {
+        this.successful || --this.i || (this.fn || empty)({
+            type: "success",
+            result: {
+                insertId: this.db.lastInsertRowID,
+                rowsAffected: 0, // TODO: is there a way to know this?
+                rows: []
+            },
+            item: eventItem,
+            length: 0,
+            db: this.self
+        });
+    }
+    
+    function error(e) {
+        --this.i || (this.fn || empty)({
+            type: "error",
+            error: e,
+            db: this.self
+        });
+    }
+    
+    function item(i) {
+        return this[i];
+    }
+    
+    const {Cc, Ci} = require("chrome");
+    
+    function openDatabase(name) {
+        var
+            file = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("UChrm", Ci.nsIFile),
+            store = Cc["@mozilla.org/storage/service;1"].getService(Ci.mozIStorageService)
+        ;
+        file.append("localhost"); // find a way to retrieve the current domain here
+        if (!file.exists() || !file.isDirectory()) {
+            file.create(Ci.nsIFile.DIRECTORY_TYPE, 0777);
+        }
+        file.append(("" + name).replace(/\W/g, "_") + ".sqlite");
+        if (!file.exists()) {
+            file.create(Ci.nsIFile.FILE_TYPE, 0777);
+        }
+        return store.openDatabase(file);
+    }
+    
+    function success(result) {
+        if (--this.i) return;
+        var
+            statement = this.statement,
+            columns = [],
+            rows = [],
+            i, length, row, tmp
+        ;
+        for (i = 0, length = statement.columnCount; i < length; ++i) {
+            columns[i] = statement.getColumnName(i);
+        }
+        while (row = result.getNextRow()) {
+            rows.push(tmp = {});
+            for (i = 0, length = row.numEntries; i < length; ++i) {
+                tmp[columns[i]] = row.getResultByIndex(i);
+            }
+        }
+        rows.item = item;
+        this.successful = true;
+        (this.fn || empty)({
+            type: "success",
+            result: {
+                insertId: this.db.lastInsertRowID,
+                rowsAffected: 0,
+                rows: rows
+            },
+            item: eventItem,
+            length: rows.length,
+            db: this.self
+        });
+    }
+    
+    
+    function arrayfy(whatever) {
+        return concat.call([], whatever === undefined ? [] : whatever);
+    }
+    
+    function empty() {}
+    
+    function eventItem(i) {
+        return this.result.rows.item(i);
+    }
+    
+    function toListOfParameters(values) {
+        return !isArray(values) || typeof values[0] != "object" || !values[0] ? [values] : values;
+    }
+    
+    
+    var
+        undefined,
+        SIZE = 5 * 1024 * 1024,
+        TABLE = " TABLE ",
+        DROP = "DROP",
+        EXISTS = " EXISTS ",
+        IF = "IF",
+        autoIncrement = "id INTEGER PRIMARY KEY AUTOINCREMENT",
+        Array = window.Array,
+        Math = window.Math,
+        max = Math.max,
+        concat = [].concat,
+    
+        isArray = Array.isArray
+    
+    
+    ;
+    
     return Database;
     
-}();
-
-/*test
-
-var db = new Database({name:"test"});
-db.query("CREATE TABLE test (key TEXT, value INTEGER)", function () {
-    console.log("createion OK");
-});
-db.query([
-    "INSERT INTO test VALUES (?, ?)",
-    "INSERT INTO test VALUES (?, ?)"
-], [
-    ["a", 1],
-    ["b", 2]
-], function () {
-    console.log("insertion OK 1");
-});
-
-db.query("INSERT INTO test VALUES (:key, :value)", {key:"c", value:3}, function () {
-    console.log("insertion OK 2");
-});
-
-db.read("SELECT * FROM test", function (result) {
-    console.log(JSON.stringify(result));
-});
-
-db.truncate("test", function (e) {
-    console.log("truncate: " + e.type);
-    db.read("SELECT * FROM test", function (result) {
-        console.log(JSON.stringify(result));
-    });
-});
-
-db.create("contacts", [
-    null,
-    "name TEXT",
-    "cell TEXT"
-], function (e) {
-    console.log("create: " + e.type);
-    db.insert("contacts", [
-        [null, "bang bang honey", "123"],
-        [null, "schweetie schweetie", "456"]
-    ], function (e) {
-        console.log("insert: " + e.type);
-        db.read("SELECT * FROM contacts", function (result) {
-            for (var i = 0; i < result.length; ++i) {
-                console.log(JSON.stringify(result.item(i)));
-            }
-        });
-    });
-});
-
-//db.drop("test", function (e) {console.log("drop: " + e.type);});
-//*/
+}(this));

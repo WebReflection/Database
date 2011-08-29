@@ -39,7 +39,7 @@ def replace(content, search, replace):
     return content
 
 # well ... this simply works as well :-D
-def compile(copyright, fullName, minName, files, search=None, replace=None):
+def compile(copyright, fullName, minName, files, find=None, repl=None):
     
     # create a copyright compatible with both YUICompressor and Google Closure Compiler
     multiCopyright = "\n".join([
@@ -59,8 +59,8 @@ def compile(copyright, fullName, minName, files, search=None, replace=None):
     files = [] # just in case ... 
     
     # replace something if necessary
-    if search != None:
-        content = replace(content, search, replace)
+    if find != None:
+        content = replace(content, find, repl)
     
     # strip out code that should not be in the minified version
     cleanContent = re.sub(r'//\^[^\x00]*?//\$[^\n\r]+', '', content)

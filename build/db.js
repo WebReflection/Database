@@ -2,7 +2,8 @@
 (C) Andrea Giammarchi, @WebReflection - Mit Style License
 */
 /**@license (C) Andrea Giammarchi, @WebReflection - Mit Style License
-*/var Database = (function (window) {"use strict";
+*/
+var Database = (function (window) {"use strict";
     
     /**
      * Copyright (C) 2011 by Andrea Giammarchi, @WebReflection
@@ -25,44 +26,7 @@
      * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
      * THE SOFTWARE.
      */
-    
-    /* node.js not supported yet
-    if (!{"function":1,"undefined":1}[typeof global]) {
-        window.Database = Database;
-        window = global;
-    }
-    */
-    
-    var
-        undefined,
-        SIZE = 5 * 1024 * 1024,
-        TABLE = " TABLE ",
-        DROP = "DROP",
-        EXISTS = " EXISTS ",
-        IF = "IF",
-        concat = [].concat,
-        read = createReadOrQuery("readT"),
-        query = createReadOrQuery("t"),
-        document = window.document,
-        max = window.Math.max,
-        SQLTransaction = window.SQLTransaction,
-        openDatabase = "openDatabase",
-        expando = "_" + ("" + Math.random()).slice(2),
-        autoIncrement = "id INTEGER PRIMARY KEY AUTOINCREMENT",
-        Array = window.Array,
-        isArray = Array.isArray || function (toString, a) {
-            a = toString.call([]);
-            return function isArray(o) {
-                return a == toString.call(o);
-            };
-        }({}.toString),
-        Object = window.Object,
-        defineProperty = Object.defineProperty || function (o, k, d) {
-            o[k] = d.value;
-            return o;
-        },
-        DatabasePrototype = Database.prototype
-    ;
+     
     
     function Database(options) {
         
@@ -79,7 +43,7 @@
             enumerable: !1,
             writable: !0,
             configurable: !0,
-            value: window[openDatabase](
+            value: openDatabase(
                 self.name = options.name || document.domain || "db",
                 self.version = options.version || "1.0",
                 self.description = options.description || "data",
@@ -94,9 +58,6 @@
         return self;
     }
     
-    function arrayfy(whatever) {
-        return concat.call([], whatever === undefined ? [] : whatever);
-    }
     
     function close() {
         // hoping that Browsers will call asyncClose on their side
@@ -115,7 +76,7 @@
         method += "ransaction";
         return function readOrWrite(SQL, A, fn) {
             var self = this;
-            if (isFunction(A)) {
+            if (typeof A == "function") {
                 fn = A;
                 A = [];
             }
@@ -140,8 +101,6 @@
         this.query(DROP + TABLE + IF + EXISTS + name, fn);
         return this;
     }
-    
-    function empty() {}
     
     function error(t, result) {
         if (t = t[expando]) {
@@ -168,28 +127,16 @@
         return self;
     }
     
-    function isFunction(fn) {
-        return typeof fn == "function";
-    }
-    
-    function item(i) {
-        return this.result.rows.item(i);
-    }
-    
     function success(t, result) {
         if (t = t[expando]) {
             --t.i || (t.fn || empty)({
                 type: "success",
                 result: result,
-                item: item,
+                item: eventItem,
                 length: result.rows.length,
                 db: t.self
             });
         }
-    }
-    
-    function toListOfParameters(values) {
-        return !isArray(values) || typeof values[0] != "object" || !values[0] ? [values] : values;
     }
     
     function truncate(name, fn) {
@@ -214,6 +161,56 @@
         });
     }
     
+    
+    function arrayfy(whatever) {
+        return concat.call([], whatever === undefined ? [] : whatever);
+    }
+    
+    function empty() {}
+    
+    function eventItem(i) {
+        return this.result.rows.item(i);
+    }
+    
+    function toListOfParameters(values) {
+        return !isArray(values) || typeof values[0] != "object" || !values[0] ? [values] : values;
+    }
+    
+    
+    var
+        undefined,
+        SIZE = 5 * 1024 * 1024,
+        TABLE = " TABLE ",
+        DROP = "DROP",
+        EXISTS = " EXISTS ",
+        IF = "IF",
+        autoIncrement = "id INTEGER PRIMARY KEY AUTOINCREMENT",
+        Array = window.Array,
+        Math = window.Math,
+        max = Math.max,
+        concat = [].concat,
+    
+        read = createReadOrQuery("readT"),
+        query = createReadOrQuery("t"),
+        document = window.document,
+        openDatabase = window.openDatabase,
+        expando = "_" + ("" + Math.random()).slice(2),
+        isArray = Array.isArray || function (toString, a) {
+            a = toString.call([]);
+            return function isArray(o) {
+                return a == toString.call(o);
+            };
+        }({}.toString),
+        Object = window.Object,
+        defineProperty = Object.defineProperty || function (o, k, d) {
+            o[k] = d.value;
+            return o;
+        },
+        DatabasePrototype = Database.prototype
+    
+    
+    ;
+    
     DatabasePrototype.close = close;
     DatabasePrototype.create = create;
     DatabasePrototype.drop = drop;
@@ -221,6 +218,7 @@
     DatabasePrototype.read = read;
     DatabasePrototype.query = query;
     DatabasePrototype.truncate = truncate;
+    
     
     return Database;
     
