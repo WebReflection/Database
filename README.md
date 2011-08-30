@@ -11,7 +11,7 @@ Main db.js features are:
   * simplified **INSERT** operations, accepting one or more arrays or objects automatically
   * simplified **TRUNCATE TABLE** operation, by default not possible in SQLite
   * **unified callback** behavior via custom **Event object** so that one callback could be potentially used with every operation
-  * **NEW** db.js interface and Web SQL Database in Firefox via dedicated, non obtrusive, and safe Add-on
+  * **NEW** db.js interface and Web SQL Database in Firefox via dedicated, non obtrusive, and safe [db.js add-on](https://github.com/WebReflection/Database/blob/master/build/dbjs.xpi)
 
 Update
 ------
