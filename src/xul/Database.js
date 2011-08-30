@@ -1,6 +1,6 @@
     
     
-    function Database(options) {
+    function Database(options, domain) {
         
         if (!(this instanceof Database))
             return new Database(options)
@@ -8,9 +8,7 @@
         
         var self = this, db;
         
-        options || (options = {});
-        
-        db = openDatabase(self.name = options.name || document.domain || "db");
+        db = openDatabase(self.name = options.name || "db", domain);
         
         // fields assigned but ignored behind the scene in this version
         self.version = options.version || "1.0";
@@ -66,49 +64,50 @@
                     handleCompletion: complete,
                     handleError: error
                 },
-                statement;
+                statement, _;
                 i < length; ++i
             ) {
                 try {
                     statement = db.createStatement(sql[i] || sql[0]);
-                    for (let param in statement.params) {
-                        statement.params[param] = a[i][param];
+                    if (a[i]) {
+                        for (let param in statement.params) {
+                            statement.params[param] = a[i][param];
+                        }
                     }
                     tr.statement = statement;
                     statement.executeAsync(tr);
                 } catch(e) {
-                    tr.handleError(e);
-                    tr = null;
+                    _ = e;
                     break;
                 }
-                
             }
-            tr && db.commitTransaction();
-            /*
-            tr ?
-                db.commitTransaction() :
-                db.rollbackTransaction()
-            ;
-            */
+            if (_) {
+                db.rollbackTransaction();
+                tr.handleError(_);
+            } else {
+                db.commitTransaction();
+            }
         };
         
         self.truncate = function truncate(name, fn) {
             var rows, item;
             self.read('SELECT * FROM sqlite_master WHERE name = ?', arrayfy(name), function (e) {
                 if (e.type == "success") {
-                    item = e.result.rows.item(0);
+                    item = e.length && e.result.rows.item(0);
                     if (item && item.type == "table" && (item.tbl_name || item.name) == name) {
-                        return self.query([
-                            DROP + TABLE + name,
-                            item.sql
-                        ], fn);
+                        // safer to perform double transaction here
+                        // due XUL native SQLite problems that actually "waried me" ...
+                        return self.query(DROP + TABLE + name, function (e) {
+                            self.query(item.sql, fn);
+                        });
                     }
                     e.type = "error";
-                    e.error = e.result;
+                    e.error = {message: "table " + name + " does not exists"};
                     delete e.result;
                 }
                 fn(e);
             });
+            return self;
         };
         
     }

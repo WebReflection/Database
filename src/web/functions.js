@@ -86,18 +86,20 @@
         ;
         self.read('SELECT * FROM sqlite_master WHERE name = ?', arrayfy(name), function (e) {
             if (e.type == "success") {
-                item = e.result.rows.item(0);
+                item = e.length && e.result.rows.item(0);
                 if (item && item.type == "table" && (item.tbl_name || item.name) == name) {
-                    return self.query([
-                        DROP + TABLE + name,
-                        item.sql
-                    ], fn);
+                    // safer to perform double transaction here
+                    // due XUL native SQLite problems that actually "waried me" ...
+                    return self.query(DROP + TABLE + name, function (e) {
+                        self.query(item.sql, fn);
+                    });
                 }
                 e.type = "error";
-                e.error = e.result;
+                e.error = {message: "table " + name + " does not exists"};
                 delete e.result;
             }
             fn(e);
         });
+        return self;
     }
     

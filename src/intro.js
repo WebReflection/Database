@@ -1,6 +1,8 @@
 
 var Database = (function (window) {/*{use_strict}*/
     
+    if (window.Database) return window.Database;
+    
     /**
      * Copyright (C) 2011 by Andrea Giammarchi, @WebReflection
      * 

@@ -62,36 +62,40 @@ def compile(copyright, fullName, minName, files, find=None, repl=None):
     if find != None:
         content = replace(content, find, repl)
     
-    # strip out code that should not be in the minified version
-    cleanContent = re.sub(r'//\^[^\x00]*?//\$[^\n\r]+', '', content)
-    
-    # write the whole (cleaned) content
-    write('../' + fullName, cleanContent)
-    
     # MINIFY!
+    if len(minName):
+        
+        # strip out code that should not be in the minified version
+        cleanContent = re.sub(r'//\^[^\x00]*?//\$[^\n\r]+', '', content)
+        
+        # write the whole (cleaned) content
+        write('../' + fullName, cleanContent)
+        
+        # YUICompressor             [faster, less greedy, bigger size]
+        os.system('java -jar "' + fullPath('jar/yuicompressor-2.4.6.jar') + '" --type=js "' + fullPath('../' + fullName) + '" -o "' + fullPath('../'  + minName) + '"')
     
-    # YUICompressor             [faster, less greedy, bigger size]
-    os.system('java -jar "' + fullPath('jar/yuicompressor-2.4.6.jar') + '" --type=js "' + fullPath('../' + fullName) + '" -o "' + fullPath('../'  + minName) + '"')
-
-    # Uglify JS                 [good performances, mediumly greedy, medium size]
-    # os.system('java -jar "' + fullPath('jar/js.jar') + '" "' + fullPath('uglify-js/exec.js') + '" "' + fullPath('uglify-js/uglify.js') + '" "' + fullPath('../' + fullName) + '" "' + copyright + '" > "' + fullPath('../'  + minName) + '"')
-
-    # Google Closure Compiler   [slowest, more greedy, smaller size]
-    # os.system('java -jar "' + fullPath('jar/compiler.jar') + '" --compilation_level=SIMPLE_OPTIMIZATIONS --language_in ECMASCRIPT5_STRICT --js "' + fullPath('../' + fullName) + '" --js_output_file "' + fullPath('../'  + minName) + '"')
+        # Uglify JS                 [good performances, mediumly greedy, medium size]
+        # os.system('java -jar "' + fullPath('jar/js.jar') + '" "' + fullPath('uglify-js/exec.js') + '" "' + fullPath('uglify-js/uglify.js') + '" "' + fullPath('../' + fullName) + '" "' + copyright + '" > "' + fullPath('../'  + minName) + '"')
     
-    # put back code that should have not been included in the minified version
+        # Google Closure Compiler   [slowest, more greedy, smaller size]
+        # os.system('java -jar "' + fullPath('jar/compiler.jar') + '" --compilation_level=SIMPLE_OPTIMIZATIONS --language_in ECMASCRIPT5_STRICT --js "' + fullPath('../' + fullName) + '" --js_output_file "' + fullPath('../'  + minName) + '"')
+        
+        # create the gzip version
+        content = read('../' + minName)
+        tmp = gzip.open(fullPath('../' + minName + '.gz'), 'w')
+        tmp.write(content)
+        tmp.close()
+        
+        # print out the result of all precedent operations
+        print('Minified size:   ' + getSize('../' + minName))
+        print('Min + Gzip size: ' + getSize('../' + minName + '.gz'))
+        
+        # remove the gzipped version
+        os.remove(fullPath('../' + minName + '.gz'))
+        
+    # put back code that should have not been included in the minified version or replaced
     write('../' + fullName, content)
-    
-    # create the gzip version
-    content = read('../' + minName)
-    tmp = gzip.open(fullPath('../' + minName + '.gz'), 'w')
-    tmp.write(content)
-    tmp.close()
     
     # print out the result of all precedent operations
     print('Full size:       ' + getSize('../' + fullName))
-    print('Minified size:   ' + getSize('../' + minName))
-    print('Min + Gzip size: ' + getSize('../' + minName + '.gz'))
     
-    # remove the gzipped version
-    os.remove(fullPath('../' + minName + '.gz'))

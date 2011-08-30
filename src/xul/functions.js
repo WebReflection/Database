@@ -27,16 +27,16 @@
     
     const {Cc, Ci} = require("chrome");
     
-    function openDatabase(name) {
+    function openDatabase(name, domain) {
         var
             file = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("UChrm", Ci.nsIFile),
             store = Cc["@mozilla.org/storage/service;1"].getService(Ci.mozIStorageService)
         ;
-        file.append("localhost"); // find a way to retrieve the current domain here
+        file.append(domain);
         if (!file.exists() || !file.isDirectory()) {
             file.create(Ci.nsIFile.DIRECTORY_TYPE, 0777);
         }
-        file.append(("" + name).replace(/\W/g, "_") + ".sqlite");
+        file.append(name.replace(/\W/g, "_") + ".sqlite");
         if (!file.exists()) {
             file.create(Ci.nsIFile.FILE_TYPE, 0777);
         }
