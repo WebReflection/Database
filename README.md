@@ -18,7 +18,9 @@ Firefox add-on now has a [demo page](http://www.3site.eu/_/test/_.html) and it p
 Update
 ------
 
-While I am finalizing Firefox Add-on, I am also thinking how to bring same interface into Internet Explorer (Silverlight?) and any help here will be appreciated, thanks.
+**The Firefox Add-on is out**, what's missing now is ... *SURPRIIIIIISEEEEE* ... Internet Explorer.
+Some idiot like me created a fully managed C# port of SQLite which actually performs like hell.
+If you have any experience with Silverlight and JS bindings, please help me to finalize this project and bring SQLite in every browser out there, included mobile.
 
 
 API
