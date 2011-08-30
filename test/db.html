@@ -129,9 +129,6 @@ wru.test([
                                 async("table truncated", function (e) {
                                     e.db.read('SELECT * FROM t1', assert(
                                         async("records retrieved", function (e) {
-                                            console.log("_____________________________");
-                                            console.log(JSON.stringify(e));
-                                            console.log("_____________________________");
                                             assert("success", e.type === "success");
                                             assert("table t1 is empty", e.length === 0);
             /* you have to admit here */    
