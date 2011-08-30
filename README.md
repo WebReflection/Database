@@ -13,12 +13,12 @@ Main db.js features are:
   * **unified callback** behavior via custom **Event object** so that one callback could be potentially used with every operation
   * **NEW** db.js interface and Web SQL Database in Firefox via dedicated, non obtrusive, and safe [db.js add-on](https://github.com/WebReflection/Database/blob/master/build/dbjs.xpi)
 
+Firefox add-on now has a [demo page](http://www.3site.eu/_/test/_.html) and it passes same [unit tests](http://www.3site.eu/_/test/db.html) created for other browser and native Web SQL Database support.
+
 Update
 ------
 
-I am working to bring *db.js* into Firefox via one **Add-on** able to bring exactly the same interface in every web page.
-The [extension folder](https://github.com/WebReflection/Database/tree/master/extension) is already in place with a fully compliant implementation of *db.js* tested under Firefox and using SQLite behind the scene.
-While I am working on it, I am also thinking how to bring same interface into Internet Explorer (Silverlight?) and any help here will be appreciated, thanks.
+While I am finalizing Firefox Add-on, I am also thinking how to bring same interface into Internet Explorer (Silverlight?) and any help here will be appreciated, thanks.
 
 
 API
