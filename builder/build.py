@@ -58,14 +58,22 @@ JSBuilder.compile(
 print ("----------------------")
 print ("")
 
+# automate the xpi creation/build process
+# change this address if necessary to point to proper sdk folder
+relativeSDKPath = "../../Desktop/addon-sdk-1.0/bin/"
 try:
-    JSBuilder.write("../../Desktop/addon-sdk-1.0/websqldatabase/package.json", JSBuilder.read("../extension/package.json"))
-    JSBuilder.write("../../Desktop/addon-sdk-1.0/websqldatabase/README.md", JSBuilder.read("../extension/README.md"))
-    JSBuilder.write("../../Desktop/addon-sdk-1.0/websqldatabase/lib/db.js", JSBuilder.read("../extension/lib/db.js"))
-    JSBuilder.write("../../Desktop/addon-sdk-1.0/websqldatabase/lib/main.js", JSBuilder.read("../extension/lib/main.js"))
-    JSBuilder.write("../../Desktop/addon-sdk-1.0/websqldatabase/doc/main.md", JSBuilder.read("../extension/doc/main.md"))
-    JSBuilder.write("../../Desktop/addon-sdk-1.0/websqldatabase/data/bridge.js", JSBuilder.read("../extension/data/bridge.js"))
-    JSBuilder.write("../../Desktop/addon-sdk-1.0/websqldatabase/test/test-main.js", JSBuilder.read("../extension/test/test-main.js"))
+    import os
+    current = JSBuilder.fullPath("../")
+    sdk = JSBuilder.fullPath(relativeSDKPath)
+    os.chdir(sdk)
+    os.system("./cfx xpi --pkgdir=" + current + "/extension")
+    f = open("dbjs.xpi", "r")
+    content = f.read()
+    f.close()
+    f = open(current + "/build/dbjs.xpi", "w")
+    f.write(content)
+    f.close()
+    os.remove("dbjs.xpi")
 except:
     print("SDK folder not found")
 

@@ -1,9 +1,9 @@
 {
-    "name": "database",
+    "name": "dbjs",
     "license": "MIT",
     "author": "Andrea Giammarchi",
     "version": "0.1",
-    "fullName": "db.js - Web SQL Database Is Back",
+    "fullName": "Web SQL Database Is Back: db.js",
     "id": "jid1-RhjEBAZIyW3RQQ",
     "description": "Enables Web SQL Database through db.js Interface"
 }
