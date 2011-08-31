@@ -28,7 +28,7 @@ require("page-mod").PageMod({
      * THE SOFTWARE.
      */
     
-    include: ["*"],
+    include: ["*", "file://*", "resource://*", "about:*"],
     contentScriptWhen: "start",
     contentScriptFile: require("self").data.url("bridge.js"),
     onAttach: function (worker) {
