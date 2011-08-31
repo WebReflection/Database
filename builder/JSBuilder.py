@@ -81,9 +81,8 @@ def compile(copyright, fullName, minName, files, find=None, repl=None):
         # os.system('java -jar "' + fullPath('jar/compiler.jar') + '" --compilation_level=SIMPLE_OPTIMIZATIONS --language_in ECMASCRIPT5_STRICT --js "' + fullPath('../' + fullName) + '" --js_output_file "' + fullPath('../'  + minName) + '"')
         
         # create the gzip version
-        content = read('../' + minName)
         tmp = gzip.open(fullPath('../' + minName + '.gz'), 'w')
-        tmp.write(content)
+        tmp.write(read('../' + minName))
         tmp.close()
         
         # print out the result of all precedent operations

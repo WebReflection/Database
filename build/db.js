@@ -1,4 +1,229 @@
 /*!
 (C) Andrea Giammarchi, @WebReflection - Mit Style License
 */
-var Database=(function(n){if(n.Database){return n.Database}function v(J){if(!(this instanceof v)){return new v(J)}var I=this;J||(J={});e(I,i,{enumerable:!1,writable:!0,configurable:!0,value:j(I.name=J.name||y.domain||"db",I.version=J.version||"1.0",I.description=J.description||"data",I.size=J.size||H,q)});I[i][i]=I;return I}function u(){}function t(J,I,K){I[0]||(I[0]=r);this.query("CREATE"+p+l+" NOT"+A+J+" ("+I.join(", ")+")",K);return this}function B(J){J+="ransaction";return function I(N,K,M){var L=this;if(typeof K=="function"){M=K;K=[]}L[i][J](function(R){for(var U=x(N),O=G(K),Q=0,S=E(U.length,O.length),T=(R[i]={self:L,fn:M,i:S}),P;Q<S;++Q){R.executeSql(U[Q]||U[0],O[Q],k,C)}});return L}}function m(I,J){this.query(z+p+l+A+I,J);return this}function C(J,I){if(J=J[i]){--J.i||(J.fn||q)({type:"error",error:I,db:J.self})}}function a(I,O,M){for(var P=this,Q=[],N=G(O),L=0,K=N.length,J=w(N[0].length+1).join(", ?").slice(2);L<K;++L){Q[L]="INSERT INTO "+I+" VALUES ("+J+")"}P.query(Q,N,M);return P}function k(J,I){if(J=J[i]){--J.i||(J.fn||q)({type:"success",result:I,item:c,length:I.rows.length,db:J.self})}}function b(J,K){var I=this,M,L;I.read("SELECT * FROM sqlite_master WHERE name = ?",x(J),function(N){if(N.type=="success"){L=N.length&&N.result.rows.item(0);if(L&&L.type=="table"&&(L.tbl_name||L.name)==J){return I.query(z+p+J,function(O){I.query(L.sql,K)})}N.type="error";N.error={message:"table "+J+" does not exists"};delete N.result}K(N)});return I}function x(I){return g.call([],I===h?[]:I)}function q(){}function c(I){return this.result.rows.item(I)}function G(I){return !s(I)||typeof I[0]!="object"||!I[0]?[I]:I}var h,H=5*1024*1024,p=" TABLE ",z="DROP",A=" EXISTS ",l="IF",r="id INTEGER PRIMARY KEY AUTOINCREMENT",w=n.Array,o=n.Math,E=o.max,g=[].concat,D=B("readT"),f=B("t"),y=n.document,j=n.openDatabase,i="_"+(""+o.random()).slice(2),s=w.isArray||function(K,J){J=K.call([]);return function I(L){return J==K.call(L)}}({}.toString),F=n.Object,e=F.defineProperty||function(K,I,J){K[I]=J.value;return K},d=v.prototype;d.close=u;d.create=t;d.drop=m;d.insert=a;d.read=D;d.query=f;d.truncate=b;return v}(this));
+/**@license (C) Andrea Giammarchi, @WebReflection - Mit Style License
+*/
+var Database = (function (window) {"use strict";
+    
+    if (window.Database) return window.Database;
+    
+    /**
+     * Copyright (C) 2011 by Andrea Giammarchi, @WebReflection
+     * 
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     * 
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+     * 
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     */
+     
+    
+    function Database(options) {
+        
+        if (!(this instanceof Database))
+            return new Database(options)
+        ;
+        
+        var self = this;
+        
+        options || (options = {});
+        
+        // internal db invisible outside the closure
+        defineProperty(self, expando, {
+            enumerable: !1,
+            writable: !0,
+            configurable: !0,
+            value: openDatabase(
+                self.name = options.name || document.domain || "db",
+                self.version = options.version || "1.0",
+                self.description = options.description || "data",
+                self.size = options.size || SIZE,
+                empty
+            )
+        });
+        
+        // but internal db can reach self inside the closure
+        self[expando][expando] = self;
+        
+        return self;
+    }
+    
+    
+    function close() {
+        // hoping that Browsers will call asyncClose on their side
+        // cannot actually remove references or transactions may fail
+        // this[expando][expando] = null;
+        // delete this[expando];
+    }
+    
+    function create(name, fields, fn) {
+        fields[0] || (fields[0] = autoIncrement);
+        this.query("CREATE" + TABLE + IF + " NOT" + EXISTS + name + " (" + fields.join(", ") + ")", fn);
+        return this;
+    }
+    
+    function createReadOrQuery(method) {
+        method += "ransaction";
+        return function readOrWrite(SQL, A, fn) {
+            var self = this;
+            if (typeof A == "function") {
+                fn = A;
+                A = [];
+            }
+            self[expando][method](function (t) {
+                for (var
+                    sql = arrayfy(SQL),
+                    a = toListOfParameters(A),
+                    i = 0,
+                    length = max(sql.length, a.length),
+                    tr = (t[expando] = {self:self, fn:fn, i:length}),
+                    tmp;
+                    i < length; ++i
+                ) {
+                    t.executeSql(sql[i] || sql[0], a[i], success, error);
+                }
+            });
+            return self;
+        };
+    }
+    
+    function drop(name, fn) {
+        this.query(DROP + TABLE + IF + EXISTS + name, fn);
+        return this;
+    }
+    
+    function error(t, result) {
+        if (t = t[expando]) {
+            --t.i || (t.fn || empty)({
+                type: "error",
+                error: result,
+                db: t.self
+            });
+        }
+    }
+    
+    function insert(name, values, fn) {
+        for (var
+            self = this,
+            sql = [],
+            a = toListOfParameters(values),
+            i = 0, length = a.length,
+            many = Array(a[0].length + 1).join(", ?").slice(2);
+            i < length; ++i
+        ) {
+            sql[i] = 'INSERT INTO ' + name + ' VALUES (' + many + ')';
+        }
+        self.query(sql, a, fn);
+        return self;
+    }
+    
+    function success(t, result) {
+        if (t = t[expando]) {
+            --t.i || (t.fn || empty)({
+                type: "success",
+                result: result,
+                item: eventItem,
+                length: result.rows.length,
+                db: t.self
+            });
+        }
+    }
+    
+    function truncate(name, fn) {
+        var
+            self = this,
+            rows, item
+        ;
+        self.read('SELECT * FROM sqlite_master WHERE name = ?', arrayfy(name), function (e) {
+            if (e.type == "success") {
+                item = e.length && e.result.rows.item(0);
+                if (item && item.type == "table" && (item.tbl_name || item.name) == name) {
+                    // safer to perform double transaction here
+                    // due XUL native SQLite problems that actually "waried me" ...
+                    return self.query(DROP + TABLE + name, function (e) {
+                        self.query(item.sql, fn);
+                    });
+                }
+                e.type = "error";
+                e.error = {message: "table " + name + " does not exists"};
+                delete e.result;
+            }
+            fn(e);
+        });
+        return self;
+    }
+    
+    
+    function arrayfy(whatever) {
+        return concat.call([], whatever === undefined ? [] : whatever);
+    }
+    
+    function empty() {}
+    
+    function eventItem(i) {
+        return this.result.rows.item(i);
+    }
+    
+    function toListOfParameters(values) {
+        return !isArray(values) || typeof values[0] != "object" || !values[0] ? [values] : values;
+    }
+    
+    
+    var
+        undefined,
+        SIZE = 5 * 1024 * 1024,
+        TABLE = " TABLE ",
+        DROP = "DROP",
+        EXISTS = " EXISTS ",
+        IF = "IF",
+        autoIncrement = "id INTEGER PRIMARY KEY AUTOINCREMENT",
+        Array = window.Array,
+        Math = window.Math,
+        max = Math.max,
+        concat = [].concat,
+    
+        read = createReadOrQuery("readT"),
+        query = createReadOrQuery("t"),
+        document = window.document,
+        openDatabase = window.openDatabase,
+        expando = "_" + ("" + Math.random()).slice(2),
+        isArray = Array.isArray || function (toString, a) {
+            a = toString.call([]);
+            return function isArray(o) {
+                return a == toString.call(o);
+            };
+        }({}.toString),
+        Object = window.Object,
+        defineProperty = Object.defineProperty || function (o, k, d) {
+            o[k] = d.value;
+            return o;
+        },
+        DatabasePrototype = Database.prototype
+    
+    
+    ;
+    
+    DatabasePrototype.close = close;
+    DatabasePrototype.create = create;
+    DatabasePrototype.drop = drop;
+    DatabasePrototype.insert = insert;
+    DatabasePrototype.read = read;
+    DatabasePrototype.query = query;
+    DatabasePrototype.truncate = truncate;
+    
+    
+    return Database;
+    
+}(this));
