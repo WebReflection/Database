@@ -50,6 +50,22 @@ Create a *db* instance following native JS behavior where *new* can or cannot be
     });
 
 
+db.close()
+----------
+
+Simulate a *close database* action on native Web SQL Database implementations, close the opened file asynchronously in Firefox ad-on.
+Any active transaction will be completed/committed but it won't be possible to perform other operations with the current db object.
+
+    var db = new Database;
+    db
+        .read("SELECT * FROM stuff", showStuff)
+        .close()
+    ;
+    
+    // to be sure we won't reuse the db further ...
+    db = null;
+
+
 db.create(tableName, fields[, callback])
 ----------------------------------------
 
@@ -156,7 +172,7 @@ Truncate is not natively supported by SQLite syntax but this method is clever en
     });
 
 
-db.query(SQL, arguments[, callback])
+db.query(SQL[, arguments[, callback]])
 ------------------------------------
 
 Every `db.query()` call creates a new *transaction* and this method is able to accept one or more SQL statements per transactions.
@@ -209,12 +225,12 @@ Everything is still valid if the *arguments* is an object, rather than an array.
 With `db.query()` *arguments* could be an object, an array, or a collection of both.
 
 
-db.read(SQL, arguments[, callback])
+db.read(SQL[, arguments[, callback]])
 -----------------------------------
 
 The `db.read()` method is similar to the `db.query()` one except it uses **readTransaction** rather than **transaction**.
 
-The difference between these two native methods is that *transaction* operates in **read/write** mode while *readTransaction* operates in **read only** mode.
+The difference between these two native methods, Firefox add-on a part, is that *transaction* operates in **read/write** mode while *readTransaction* operates in **read only** mode.
 
 I could not measure performances but if a query is about reading, rather than inserting, deleting, or updating, `db.read()` is the method you are looking for, assuming things are optimized and faster on SQLite level.
 
