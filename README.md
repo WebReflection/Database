@@ -21,7 +21,7 @@ The only known issue I am working on is the local file without a domain ... righ
 Update
 ------
 
-**The Firefox Add-on is out**, what's missing now is Internet Explorer.
+[The Firefox Add-on is out](https://addons.mozilla.org/en-US/firefox/addon/web-sql-database-is-back-db/), what's missing now is Internet Explorer.
 Some "*idiot*" like me who thinks SQLite should be used, created a fully managed C# port of SQLite which actually performs like hell.
 If you have any experience with Silverlight and JS bindings, please help me to finalize this project and bring SQLite in every browser out there, included mobile.
 
