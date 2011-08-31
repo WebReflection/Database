@@ -13,12 +13,15 @@ Main db.js features are:
   * **unified callback** behavior via custom **Event object** so that one callback could be potentially used with every operation
   * **NEW** db.js interface and Web SQL Database in Firefox via dedicated, non obtrusive, and safe [db.js add-on](https://github.com/WebReflection/Database/blob/master/build/dbjs.xpi)
 
-Firefox add-on now has a [demo page](http://www.3site.eu/_/test/_.html) and it passes same [unit tests](http://www.3site.eu/_/test/db.html) created for other browser and native Web SQL Database support.
+Firefox add-on now has a [demo page](http://www.3site.eu/_/test/_.html) and it passes same [unit tests](http://www.3site.eu/_/test/db.html) created for browsers with native Web SQL Database support.
+
+The only known issue I am working on is the local file without a domain ... right now Firefox add-on does not work with empty documents or *file://* protocol, a locl webserver or an online webpage is necessary.
+
 
 Update
 ------
 
-**The Firefox Add-on is out**, what's missing now is ... *SURPRIIIIIISEEEEE* ... Internet Explorer.
+**The Firefox Add-on is out**, what's missing now is Internet Explorer.
 Some "*idiot*" like me who thinks SQLite should be used, created a fully managed C# port of SQLite which actually performs like hell.
 If you have any experience with Silverlight and JS bindings, please help me to finalize this project and bring SQLite in every browser out there, included mobile.
 
