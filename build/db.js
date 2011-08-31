@@ -3,9 +3,9 @@
 */
 /**@license (C) Andrea Giammarchi, @WebReflection - Mit Style License
 */
-var Database = (function (window) {"use strict";
+var Database = (function (window, $Database) {"use strict";
     
-    if (window.Database) return window.Database;
+    if ($Database in window && !window.opera) return window[$Database];
     
     /**
      * Copyright (C) 2011 by Andrea Giammarchi, @WebReflection
@@ -146,7 +146,7 @@ var Database = (function (window) {"use strict";
             self = this,
             rows, item
         ;
-        self.read('SELECT * FROM sqlite_master WHERE name = ?', arrayfy(name), function (e) {
+        self.query('SELECT * FROM sqlite_master WHERE name = ?', arrayfy(name), function (e) {
             if (e.type == "success") {
                 item = e.length && e.result.rows.item(0);
                 if (item && item.type == "table" && (item.tbl_name || item.name) == name) {
@@ -226,4 +226,4 @@ var Database = (function (window) {"use strict";
     
     return Database;
     
-}(this));
+}(this, "Database"));

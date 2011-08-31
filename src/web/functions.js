@@ -84,7 +84,7 @@
             self = this,
             rows, item
         ;
-        self.read('SELECT * FROM sqlite_master WHERE name = ?', arrayfy(name), function (e) {
+        self.query('SELECT * FROM sqlite_master WHERE name = ?', arrayfy(name), function (e) {
             if (e.type == "success") {
                 item = e.length && e.result.rows.item(0);
                 if (item && item.type == "table" && (item.tbl_name || item.name) == name) {

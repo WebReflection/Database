@@ -3,9 +3,9 @@
 */
 /**@license (C) Andrea Giammarchi, @WebReflection - Mit Style License
 */
-var Database = (function (window) {exports.Database = Database;
+var Database = (function (window, $Database) {exports.Database = Database;
     
-    if (window.Database) return window.Database;
+    if ($Database in window && !window.opera) return window[$Database];
     
     /**
      * Copyright (C) 2011 by Andrea Giammarchi, @WebReflection
@@ -256,4 +256,4 @@ var Database = (function (window) {exports.Database = Database;
     
     return Database;
     
-}(this));
+}(this, "Database"));

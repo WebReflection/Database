@@ -1,4 +1,4 @@
     
     return Database;
     
-}(this));
+}(this, "Database"));
