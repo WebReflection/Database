@@ -1,7 +1,7 @@
 
 var Database = (function (window, $Database) {/*{use_strict}*/
     
-    if ($Database in window && !window.opera) return window[$Database];
+    if (window[$Database] && !window.opera) return window[$Database];
     
     /**
      * Copyright (C) 2011 by Andrea Giammarchi, @WebReflection
