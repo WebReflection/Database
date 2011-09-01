@@ -11,9 +11,9 @@ Main db.js features are:
   * simplified **INSERT** operations, accepting one or more arrays or objects automatically
   * simplified **TRUNCATE TABLE** operation, by default not possible in SQLite
   * **unified callback** behavior via custom **Event object** so that one callback could be potentially used with every operation
-  * **NEW** db.js interface and Web SQL Database in Firefox via dedicated, non obtrusive, and safe [db.js add-on](https://github.com/WebReflection/Database/blob/master/build/dbjs.xpi)
+  * **NEW** db.js interface and Web SQL Database in Firefox via dedicated, non obtrusive, and safe [db.js add-on](https://addons.mozilla.org/en-US/firefox/addon/web-sql-database-is-back-db/)
 
-Firefox add-on now has a [demo page](http://www.3site.eu/_/test/_.html) and it passes same [unit tests](http://www.3site.eu/_/test/db.html) created for browsers with native Web SQL Database support.
+Firefox add-on now has a passes same [unit tests](http://www.3site.eu/_/test/db.html) created for browsers with native Web SQL Database support.
 
 The only known issue I am working on is the local file without a domain ... right now Firefox add-on does not work with empty documents or *file://* protocol, a locl webserver or an online webpage is necessary.
 
