@@ -46,7 +46,7 @@ var Database = (function (window, $Database) {"use strict";
             writable: !0,
             configurable: !0,
             value: openDatabase(
-                self.name = options.name || document.domain.replace(/\./g, "_") || "db",
+                self.name = options.name || document.domain.replace(/\./g, "-") || "db",
                 self.version = options.version || "1.0",
                 self.description = options.description || "data",
                 self.size = options.size || SIZE,
